@@ -2,20 +2,23 @@ import { useEffect, useState } from "react";
 import PageHeader from "../components/PageHeader";
 import { Proveedor } from "../types/Proveedor";
 import { API_URL } from "../utils";
+import axios from "axios";
+import './Suppliers.css'
 
 function Suppliers() {
     const [listaProveedores, setListaProveedores] = useState<Proveedor[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         leerServicio();
     }, []);
 
     const leerServicio = () => {
-        fetch(API_URL + "proveedores.php")
-            .then(response => response.json())
-            .then((data: Proveedor[]) => {
-                console.log(data);
-                setListaProveedores(data);
+        axios.get<Proveedor[]>(API_URL + "proveedores.php")
+            .then((response) => {
+                console.log(response);
+                setListaProveedores(response.data);
+                setLoading(false)
             })
             .catch((error) => {
                 console.error("Error consultando datos:", error);
@@ -53,12 +56,18 @@ function Suppliers() {
         )
     }
 
+    const dibujarPrecarga = () => {
+        return (
+            <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+        )
+    }
+
     return (
         <>
             <PageHeader pageTitle="Proveedores" />
             <section id="suppliers" className='padded'>
                 <div className="container">
-                    {dibujarTabla()}
+                    {loading ? dibujarPrecarga(): dibujarTabla()}
                 </div>
             </section>
         </>

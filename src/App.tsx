@@ -10,6 +10,9 @@ import Employees from './pages/Employees'
 import Store from './pages/Store'
 import ProductDetails from './pages/ProductDetails'
 import Cart from './pages/Cart'
+import Directores from './pages/Directores'
+import Clientes from './pages/Clientes'
+import Pedidos from './pages/Pedidos'
 
 function App() {
   return (
@@ -24,9 +27,12 @@ function App() {
             <Route path="/inversiones" element={<Investments />} />
             <Route path="/proveedores" element={<Suppliers />} />
             <Route path="/empleados" element={<Employees />} />
+            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/pedidos" element={<Pedidos />} />
             <Route path="/tienda" element={<Store />} />
             <Route path="/productodetalle/:idproducto" element={<ProductDetails />} />
             <Route path="/carrito" element={<Cart />} />
+            <Route path="/directores" element={<Directores />} />
           </Routes>     
         </main>
         

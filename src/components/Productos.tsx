@@ -18,9 +18,19 @@ function Productos({ codigoCategoria }: ProductosProps) {
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto>()
   const [cantidadModal, setCantidadModal] = useState<number>(1)
 
+  const [numeroPagina, setNumeroPagina] = useState(0)
+  const filasPagina = 5
+
+  const [opcionSeleccionada, setOpcionSeleccionada] = useState(0)
+
   useEffect(() => {
     leerServicio(codigoCategoria)
+    setNumeroPagina(0)
   }, [codigoCategoria])
+
+  useEffect(() => {
+    ordenarListaProductos(opcionSeleccionada)
+  }, [opcionSeleccionada])
 
   const leerServicio = async (idcategoria: number) => {
     try {
@@ -36,7 +46,7 @@ function Productos({ codigoCategoria }: ProductosProps) {
   const dibujarCuadricula = () => {
     return (
       <div id="cards-productos" className="row row-cols-xxl-5 row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-1 g-4">
-        {listaProductos.map((item) => {
+        {listaProductos.slice(filasPagina * numeroPagina, filasPagina * (numeroPagina + 1)).map((item) => {
           const precioRebajado = Number(item.preciorebajado)
           const precio = Number(item.precio)
           return (
@@ -84,19 +94,19 @@ function Productos({ codigoCategoria }: ProductosProps) {
 
   const seleccionarProducto = async (idproducto: number) => {
     console.log(idproducto)
-   
+
     setCantidadModal(1)
     try {
       const response = await fetch(API_URL + "productos.php?idproducto=" + idproducto)
       const data: Producto[] = await response.json()
       console.log(data)
-      setProductoSeleccionado(data[0]) 
+      setProductoSeleccionado(data[0])
     } catch (error) {
       console.log("Error consultando datos:", error)
     }
   }
 
- 
+
   const handleCantidadModalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
 
@@ -254,9 +264,61 @@ function Productos({ codigoCategoria }: ProductosProps) {
     )
   }
 
+  const dibujarPaginacion = () => {
+    const totalPaginas = Math.ceil(listaProductos.length / filasPagina)
+    const botones = [];
+    for (let i = 1; i <= totalPaginas; i++)
+      botones.push(
+        <li key={i} className={`page-item ${i === numeroPagina + 1 ? 'active' : ''}`}><a className="page-link" href="#"
+          onClick={() => setNumeroPagina(i - 1)}>{i}</a></li>
+      )
+
+    return (
+      <nav aria-label="Page Navigation" className="mt-3">
+        <ul className="pagination">
+          {botones}
+        </ul>
+      </nav>)
+  }
+
+  const ordenarListaProductos = (criterio: Number) => {
+    const productosOrdenados = Array.from(listaProductos)
+
+    switch (criterio) {
+      case 0:
+        productosOrdenados.sort((a, b) => Number(a.idproducto) - Number(b.idproducto))
+        break
+      case 1:
+        productosOrdenados.sort((a, b) => Number(b.idproducto) - Number(a.idproducto))
+        break
+      case 2:
+        productosOrdenados.sort((a, b) => Number(a.preciorebajado || a.precio) - Number(b.preciorebajado || b.precio))
+        break
+      case 3:
+        productosOrdenados.sort((a, b) => Number(b.preciorebajado || b.precio) - Number(a.preciorebajado || a.precio))
+        break
+    }
+    setListaProductos(productosOrdenados)
+  }
+
+  const dibujarOrdenarPor = () => {
+    return (
+      <select className="form-select mb-3 w-auto"
+        value={opcionSeleccionada}
+        onChange={(event) => setOpcionSeleccionada(Number(event.target.value))}>
+        <option value={0}>Mas antiguo</option>
+        <option value={1}>Reciente</option>
+        <option value={2}>Precio mas bajo</option>
+        <option value={3}>Precio mas alto</option>
+      </select>
+    )
+  }
+
   return (
     <>
+      {dibujarOrdenarPor()}
       {dibujarCuadricula()}
+      {dibujarPaginacion()}
       {showQuickView()}
     </>
   )

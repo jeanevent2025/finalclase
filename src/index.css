@@ -37,6 +37,18 @@ h3{
   background-color: var(--color3);
   border-color: var(--color3);
 }
+.page-item.active a{
+  background-color: var(--color3);
+}
+.page-link{
+  background-color: var(--color1);
+  color: var(--color3);
+}
+.page-link:focus{
+  box-shadow:none;
+  background-color: var(--color4);
+  color: var(--color-blanco)
+}
 
 
 
