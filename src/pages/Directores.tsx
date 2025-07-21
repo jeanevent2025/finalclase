@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../components/PageHeader";
-import { Director } from "../types/director";
+import { Director } from "../types/Directores";
 import { API_URL } from "../utils";
 import axios from "axios";
 
